@@ -8,10 +8,10 @@ from tests.fakes import FakeLLM
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
-        ("мой номер +7 916 123-45-67", "+79161234567"),
-        ("звоните 89161234567", "89161234567"),
-        ("капитал примерно 25 млн евро", None),  # an amount, not a phone number
-        ("основаны в 2011 году", None),  # a year, not a phone number
+        ("my number is +41 79 123 45 67", "+41791234567"),
+        ("call me on 07700 900123", "07700900123"),
+        ("our capital is around 25 million EUR", None),  # an amount, not a phone number
+        ("we were founded in 2011", None),  # a year, not a phone number
     ],
 )
 def test_phone_cleanup(text, expected):
@@ -23,17 +23,17 @@ def test_lead_slots():
     assert lead.missing_slots() == ["name", "email", "phone", "preferred_time"]
     assert not lead.crm_ready
 
-    lead.name, lead.email = "Иван", "ivan@example.com"
+    lead.name, lead.email = "James", "james@example.com"
     assert lead.crm_ready
     assert lead.missing_slots() == ["phone", "preferred_time"]
 
 
 async def test_regex_wins_over_llm(make_chat):
     """Regex results outrank the model, and malformed model values are dropped."""
-    llm = FakeLLM(extract={"email": "wrong@@", "phone": "12", "name": "Иван"})
+    llm = FakeLLM(extract={"email": "wrong@@", "phone": "12", "name": "James"})
     service, _ = make_chat(llm)
 
-    response = await service.respond("Пишите на ivan@example.com, я Иван", None)
-    assert response.lead.email == "ivan@example.com"
-    assert response.lead.name == "Иван"
+    response = await service.respond("I am James, write to james@example.com", None)
+    assert response.lead.email == "james@example.com"
+    assert response.lead.name == "James"
     assert response.lead.phone is None

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 LEAD_ASK_MARKER = "Append ONE short line to the answer"
 HANDOFF_MARKER = "The lead has been handed to a partner"
-LEAD_ASK_REPLY = "Оставьте email — пришлю сравнение тарифов."
+LEAD_ASK_REPLY = "Leave an email and I will send the tier comparison."
 
 
 class FakeLLM:
     """Stands in for the provider: canned replies keyed by the kind of prompt."""
 
-    def __init__(self, extract: dict | None = None, answer: str = "Ответ по базе знаний.") -> None:
+    def __init__(self, extract: dict | None = None, answer: str = "Answer from the KB.") -> None:
         self.extract_result = extract or {}
         self.answer = answer
         self.calls: list[list[dict]] = []
@@ -21,7 +21,7 @@ class FakeLLM:
         if LEAD_ASK_MARKER in content:
             return LEAD_ASK_REPLY
         if HANDOFF_MARKER in content:
-            return "Спасибо, передал заявку партнёру."
+            return "Thank you, a partner will be in touch."
         return self.answer
 
     async def chat_json(self, messages, *, temperature=0.0):

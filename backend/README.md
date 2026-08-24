@@ -1,15 +1,5 @@
 # Backend — Family Office RAG Chat
 
-FastAPI + LangGraph with an async httpx client for any OpenAI-compatible provider.
-
-## Run
-
-```bash
-cd backend
-cp .env.example .env          # set OPENAI_API_KEY and OPENAI_BASE_URL
-uv sync --extra dev
-uv run uvicorn app.main:app --reload --port 8000
-```
 
 Swagger: http://localhost:8000/docs
 

@@ -22,34 +22,41 @@ from app.rag.loader import Chunk, load_chunks
 
 logger = logging.getLogger(__name__)
 
-_TOKEN_RE = re.compile(r"[a-zA-Zа-яА-ЯёЁ0-9]+", re.UNICODE)
+_TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
 _STOPWORDS = {
-    "и", "в", "на", "по", "для", "что", "это", "как", "а", "но", "с", "у", "к", "не", "ли",
-    "или", "за", "от", "до", "из", "мы", "вы", "я", "он", "она", "они", "the", "a", "of", "to",
-    "is", "for", "and", "in",
+    "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on", "for", "with", "at",
+    "by", "from", "as", "is", "are", "was", "were", "be", "been", "am", "do", "does", "did",
+    "have", "has", "had", "it", "its", "this", "that", "these", "those", "i", "we", "you",
+    "they", "he", "she", "my", "our", "your", "their", "me", "us", "them", "what", "which",
+    "who", "how", "when", "where", "why", "can", "could", "would", "should", "will", "there",
+    "about", "into", "than", "then", "so", "not", "no", "any", "all", "also", "much", "many",
 }
+
 _VECTOR_WEIGHT = 0.65
 _LEXICAL_WEIGHT = 0.35
 
 
-# A light stemmer instead of pymorphy/nltk. The knowledge base is in Russian, and
-# without stemming BM25 misses obvious matches (the query "скидки" does not find
-# "скидка", "преемственность" does not find "преемственности").
-_SUFFIXES = (
-    "ированиями", "ированиях", "ированием", "ирования", "ированию", "ированные",
-    "ическими", "ическому", "ического", "ическая", "ическое", "ические",
-    "иями", "ями", "ами", "ов", "ев", "ей", "ой", "ий", "ый", "ая", "ое", "ые", "ие",
-    "ах", "ях", "ам", "ям", "ом", "ем", "ую", "юю", "ья", "ье", "ьи", "ти", "ть",
-    "ы", "и", "а", "о", "е", "у", "ю", "я", "ь", "й",
-)
+# A light stemmer instead of nltk/Porter: without it BM25 misses obvious matches
+# ("discounts" would not find "discount", "pricing" would not find "price").
 _MIN_STEM = 4
 
 
 def stem(token: str) -> str:
-    token = token.replace("ё", "е")
-    for suffix in _SUFFIXES:
+    if len(token) <= 3 or token.isdigit():  # "fee", "tax", "eur" stay as they are
+        return token
+    if token.endswith("ies"):
+        token = token[:-3] + "y"
+    elif token.endswith(("sses", "xes", "zes", "ches", "shes")):  # "taxes" -> "tax"
+        token = token[:-2]
+    elif token.endswith("s") and not token.endswith(("ss", "us", "is")):
+        token = token[:-1]
+    for suffix in ("ing", "edly", "ed", "ly", "ment", "tion", "ness"):
         if len(token) - len(suffix) >= _MIN_STEM and token.endswith(suffix):
-            return token[: -len(suffix)]
+            token = token[: -len(suffix)]
+            break
+    # "including" and "included" must collapse onto the same stem as "include".
+    if len(token) > _MIN_STEM and token.endswith("e"):
+        token = token[:-1]
     return token
 
 

@@ -2,75 +2,75 @@
   "items": [
     {
       "id": "faq-min-ticket",
-      "category": "Условия",
-      "question": "Какой минимальный размер капитала для работы с вами?",
-      "answer": "Мы начинаем работу с капитала от 5 млн €. Ниже этого порога наш retainer экономически невыгоден клиенту — в таких случаях мы рекомендуем private banking, а не family office."
+      "category": "Terms",
+      "question": "What is the minimum amount of capital you work with?",
+      "answer": "We start at 5M EUR. Below that our retainer is poor value for the client, so we normally point people towards private banking rather than a family office."
     },
     {
       "id": "faq-onboarding",
-      "category": "Процесс",
-      "question": "Как выглядит начало работы?",
-      "answer": "Четыре шага: (1) знакомство и разбор ситуации, 60 минут, бесплатно; (2) диагностика структуры и предложение с фиксированной сметой, 1–2 недели; (3) подписание договора и KYC/AML; (4) онбординг — от 3–4 недель на Essential Wealth до 12–16 недель на Bespoke Dynasty."
+      "category": "Process",
+      "question": "What does getting started look like?",
+      "answer": "Four steps: (1) an introductory call to understand your situation, 60 minutes, free of charge; (2) a diagnostic of your current structure and a proposal with a fixed quote, one to two weeks; (3) signing the engagement plus KYC and AML; (4) onboarding, from 3-4 weeks on Essential Wealth up to 12-16 weeks on Bespoke Dynasty."
     },
     {
       "id": "faq-first-call",
-      "category": "Процесс",
-      "question": "Что нужно подготовить к первому звонку?",
-      "answer": "Ничего документального не нужно. Достаточно понимать порядок капитала, в каких странах находятся активы и что беспокоит больше всего: налоги, отчётность, преемственность или доходность. Документы запрашиваем только на этапе диагностики."
+      "category": "Process",
+      "question": "What should I prepare for the first call?",
+      "answer": "No documents at all. It is enough to know the rough size of your capital, which countries hold the assets, and what worries you most: taxes, reporting, succession or returns. Documents are only requested at the diagnostic stage."
     },
     {
       "id": "faq-confidentiality",
-      "category": "Конфиденциальность",
-      "question": "Как вы обеспечиваете конфиденциальность?",
-      "answer": "NDA подписывается до передачи любых документов. Данные хранятся в швейцарском ЦОД, доступ — только у закреплённой команды по принципу минимальных прав. Мы не передаём информацию третьим лицам без письменного поручения клиента и не используем кейсы клиентов в маркетинге."
+      "category": "Confidentiality",
+      "question": "How do you protect confidentiality?",
+      "answer": "An NDA is signed before any document changes hands. Data is stored in a Swiss data centre and access is limited to the assigned team on a least-privilege basis. We never share information with third parties without written instruction, and we never use client cases in marketing."
     },
     {
       "id": "faq-fees",
-      "category": "Стоимость",
-      "question": "Есть ли скрытые комиссии или performance fee?",
-      "answer": "Нет. Мы работаем только на фиксированном retainer и setup fee. Performance fee и ретроцессии от банков и фондов не получаем — при обнаружении ретроцессии она возвращается клиенту. Это принципиальная позиция: наш доход не зависит от того, какой продукт вы купите."
+      "category": "Pricing",
+      "question": "Are there hidden fees or a performance fee?",
+      "answer": "No. We charge only the fixed retainer and the setup fee. We take no performance fee and no retrocessions from banks or funds; if a retrocession is discovered it is returned to the client. This is a matter of principle: our income does not depend on which product you buy."
     },
     {
       "id": "faq-jurisdictions",
-      "category": "Юрисдикции",
-      "question": "С какими юрисдикциями вы работаете?",
-      "answer": "Основные офисы: Швейцария (Цуг), Люксембург, ОАЭ (DIFC), Сингапур. Через партнёрскую сеть работаем с Великобританией, Кипром, Мальтой, США и Гонконгом. Для России и стран СНГ проводим отдельный комплаенс-скрининг до начала работы."
+      "category": "Jurisdictions",
+      "question": "Which jurisdictions do you cover?",
+      "answer": "Our own offices are in Switzerland (Zug), Luxembourg, the UAE (DIFC) and Singapore. Through partner firms we also cover the UK, Cyprus, Malta, the US and Hong Kong. Clients connected to Russia and the CIS go through a separate compliance screening before we start."
     },
     {
       "id": "faq-vs-bank",
-      "category": "Сравнение",
-      "question": "Чем вы отличаетесь от private banking в крупном банке?",
-      "answer": "Банк продаёт свои продукты и видит только счета, открытые у него. Мы независимы от продуктов, видим капитал целиком (все банки, недвижимость, бизнес, private equity) и работаем на стороне клиента: контролируем комиссии банков, ведём налоги и структуру владения, а не только портфель."
+      "category": "Comparison",
+      "question": "How are you different from private banking at a large bank?",
+      "answer": "A bank sells its own products and only sees the accounts held with it. We are product-independent, we see the whole balance sheet (every bank, real estate, the business, private equity) and we work on the client's side: we police bank fees and own the tax and ownership structure, not just the portfolio."
     },
     {
       "id": "faq-existing-advisors",
-      "category": "Сравнение",
-      "question": "У нас уже есть юрист и бухгалтер. Зачем family office?",
-      "answer": "Мы не заменяем их, а координируем. Типичная проблема — юрист, бухгалтер и три банка не разговаривают друг с другом, и решения принимаются без общей картины. Family office собирает единую отчётность и держит стратегию, оставляя ваших консультантов на их участках."
+      "category": "Comparison",
+      "question": "We already have a lawyer and an accountant. Why add a family office?",
+      "answer": "We do not replace them, we coordinate them. The usual problem is that a lawyer, an accountant and three banks never talk to each other, so decisions get made without the full picture. A family office builds one consolidated report and owns the strategy, leaving your advisers to do their own parts."
     },
     {
       "id": "faq-exit",
-      "category": "Условия",
-      "question": "Можно ли расторгнуть договор?",
-      "answer": "Да, с уведомлением за 90 дней после истечения минимального срока (12 / 24 / 36 месяцев в зависимости от тарифа). При расторжении мы передаём всю документацию и структуру данных в машиночитаемом виде — vendor lock-in отсутствует."
+      "category": "Terms",
+      "question": "Can the engagement be terminated?",
+      "answer": "Yes, on 90 days' notice once the minimum term has passed (12, 24 or 36 months depending on the tier). On exit we hand over all documentation and the full data structure in machine-readable form: there is no vendor lock-in."
     },
     {
       "id": "faq-reporting",
-      "category": "Отчётность",
-      "question": "Как выглядит отчётность?",
-      "answer": "Ежемесячный консолидированный отчёт: активы по классам и юрисдикциям, движение денежных средств, доходность, комиссии, налоговые обязательства. Плюс онлайн-кабинет с актуальными данными и квартальная встреча с разбором."
+      "category": "Reporting",
+      "question": "What does the reporting look like?",
+      "answer": "A monthly consolidated report: assets by class and jurisdiction, cash flows, performance, fees and tax liabilities. Plus an online portal with current figures and a quarterly review meeting."
     },
     {
       "id": "faq-speed",
-      "category": "Процесс",
-      "question": "Как быстро можно начать?",
-      "answer": "Знакомство — в течение 2–3 рабочих дней после заявки. Договор при готовности документов — за 1–2 недели. Самый долгий этап — KYC/AML при сложной структуре владения."
+      "category": "Process",
+      "question": "How quickly can we start?",
+      "answer": "The introductory call happens within two or three business days of your enquiry. If documents are ready, the engagement is signed in one to two weeks. The longest step is KYC and AML when the ownership structure is complex."
     },
     {
       "id": "faq-languages",
-      "category": "Сервис",
-      "question": "На каких языках вы работаете?",
-      "answer": "Русский, английский, немецкий, французский. Отчётность предоставляем на русском и английском."
+      "category": "Service",
+      "question": "Which languages do you work in?",
+      "answer": "English, German, French and Russian. Reporting is delivered in English, with a second language on request."
     }
   ]
 }

@@ -1,97 +1,97 @@
 {
   "company": {
     "name": "Meridian Family Office",
-    "jurisdictions": ["Швейцария (Цуг)", "Люксембург", "ОАЭ (DIFC)", "Сингапур"],
+    "jurisdictions": ["Switzerland (Zug)", "Luxembourg", "UAE (DIFC)", "Singapore"],
     "founded": 2011,
-    "aum_eur": "3.4 млрд",
+    "aum_eur": "3.4 billion",
     "clients": 47,
     "currency": "EUR",
-    "billing": "Ежемесячный retainer + единоразовый setup fee. Performance fee не взимается."
+    "billing": "Monthly retainer plus a one-off setup fee. No performance fee is charged."
   },
   "tiers": [
     {
       "id": "essential",
       "name": "Essential Wealth",
-      "tagline": "Порядок в капитале: единая отчётность и налоговый контур",
-      "target_client": "Капитал 5–20 млн €, 1–2 юрисдикции, до 5 банковских/брокерских счетов",
+      "tagline": "Order in your capital: one consolidated report and a clean tax perimeter",
+      "target_client": "Wealth of 5-20M EUR, one or two jurisdictions, up to five bank and brokerage accounts",
       "price_monthly_eur": 12000,
       "setup_fee_eur": 15000,
       "min_contract_months": 12,
-      "price_note": "Фиксированный retainer, не зависит от размера портфеля",
+      "price_note": "A flat retainer that does not scale with portfolio size",
       "includes": [
-        "Консолидированная отчётность по всем счетам (ежемесячно)",
-        "Налоговое планирование и подготовка деклараций для 1–2 юрисдикций",
-        "Контроль банковских комиссий и аудит costs на портфеле",
-        "Инвестиционный обзор портфеля раз в квартал",
-        "Выделенный клиентский менеджер, ответ в течение 1 рабочего дня"
+        "Consolidated monthly reporting across every account",
+        "Tax planning and tax return preparation for one or two jurisdictions",
+        "Bank fee control and a cost audit across the portfolio",
+        "Quarterly investment review of the portfolio",
+        "A dedicated client manager who replies within one business day"
       ],
       "excludes": [
-        "Создание и администрирование трастов",
-        "Управление недвижимостью",
-        "Concierge и lifestyle-сервисы"
+        "Trust formation and trust administration",
+        "Real estate management",
+        "Concierge and lifestyle services"
       ],
-      "onboarding_weeks": "3–4",
-      "team": "Клиентский менеджер + налоговый консультант"
+      "onboarding_weeks": "3-4",
+      "team": "Client manager plus tax adviser"
     },
     {
       "id": "private",
       "name": "Private Office",
-      "tagline": "Полноценный family office без своего штата",
-      "target_client": "Капитал 20–100 млн €, несколько юрисдикций, недвижимость и private equity",
+      "tagline": "A full family office without hiring your own staff",
+      "target_client": "Wealth of 20-100M EUR, several jurisdictions, real estate and private equity",
       "price_monthly_eur": 28000,
       "setup_fee_eur": 35000,
       "min_contract_months": 24,
-      "price_note": "При портфеле свыше 60 млн € retainer обсуждается индивидуально",
+      "price_note": "Above 60M EUR under advisory the retainer is agreed individually",
       "includes": [
-        "Всё из Essential Wealth",
-        "Инвестиционный комитет раз в месяц с участием CIO",
-        "Структурирование холдингов и трастов, работа с внешними юристами",
-        "Управление портфелем недвижимости и арендными потоками",
-        "Доступ к клубным сделкам: private equity, private credit, co-investments",
-        "Управление ликвидностью и кредитными линиями под залог портфеля (Lombard)",
-        "Консолидированный риск-отчёт и стресс-тесты раз в квартал"
+        "Everything in Essential Wealth",
+        "Monthly investment committee chaired by our CIO",
+        "Holding and trust structuring, coordination of external lawyers",
+        "Real estate portfolio management and rental cash flow oversight",
+        "Access to club deals: private equity, private credit and co-investments",
+        "Liquidity management and Lombard credit lines against the portfolio",
+        "Consolidated quarterly risk report with stress tests"
       ],
       "excludes": [
-        "Полное сопровождение смены налогового резидентства (отдельный проект)",
-        "Благотворительный фонд под ключ (отдельный проект)"
+        "Full tax residency relocation support (a separate project)",
+        "Turnkey charitable foundation (a separate project)"
       ],
-      "onboarding_weeks": "6–8",
-      "team": "Партнёр + CIO + налоговый консультант + аналитик"
+      "onboarding_weeks": "6-8",
+      "team": "Partner plus CIO plus tax adviser plus analyst"
     },
     {
       "id": "bespoke",
       "name": "Bespoke Dynasty",
-      "tagline": "Мультиюрисдикционная структура и передача капитала следующему поколению",
-      "target_client": "Капитал от 100 млн €, 3+ юрисдикции, несколько ветвей семьи, операционный бизнес",
-      "price_monthly_eur": "от 65000, индивидуальный расчёт",
-      "setup_fee_eur": "от 90000, зависит от числа структур",
+      "tagline": "Multi-jurisdictional structure and handover of capital to the next generation",
+      "target_client": "Wealth from 100M EUR, three or more jurisdictions, several family branches, an operating business",
+      "price_monthly_eur": "from 65000, priced individually",
+      "setup_fee_eur": "from 90000, depending on the number of structures",
       "min_contract_months": 36,
-      "price_note": "Итоговая смета формируется после диагностики (4–6 недель, 25 000 €, зачитывается в setup fee)",
+      "price_note": "The final quote follows a diagnostic (4-6 weeks, 25 000 EUR, credited against the setup fee)",
       "includes": [
-        "Всё из Private Office",
-        "Family governance: family constitution, совет семьи, регламенты принятия решений",
-        "План преемственности и подготовка next-gen (образовательная программа)",
-        "Мультиюрисдикционные трасты, фонды, PPLI-структуры",
-        "Филантропия: создание и администрирование фонда",
-        "Сопровождение сделок M&A по операционному бизнесу",
-        "Выделенная команда с закреплённым партнёром, доступ 24/7",
-        "Ежегодный независимый аудит структуры"
+        "Everything in Private Office",
+        "Family governance: family constitution, family council, decision-making rules",
+        "Succession plan and a next-gen education programme",
+        "Multi-jurisdictional trusts, foundations and PPLI structures",
+        "Philanthropy: setting up and administering a foundation",
+        "M&A support for the operating business",
+        "A dedicated team with a named partner and 24/7 access",
+        "Annual independent audit of the structure"
       ],
       "excludes": [],
-      "onboarding_weeks": "12–16",
-      "team": "Управляющий партнёр + выделенная команда 5–7 человек"
+      "onboarding_weeks": "12-16",
+      "team": "Managing partner plus a dedicated team of five to seven people"
     }
   ],
   "addons": [
-    {"name": "Смена налогового резидентства (проект)", "price_eur": "от 40000", "duration": "4–9 месяцев"},
-    {"name": "Аудит существующей структуры (second opinion)", "price_eur": 18000, "duration": "3–4 недели"},
-    {"name": "Concierge и lifestyle-менеджмент", "price_eur": "6000 / мес", "duration": "—"},
-    {"name": "Art advisory и хранение коллекций", "price_eur": "от 9000 / мес", "duration": "—"},
-    {"name": "Кибербезопасность семьи и цифровая гигиена", "price_eur": 22000, "duration": "разово + поддержка"}
+    {"name": "Tax residency relocation (project)", "price_eur": "from 40000", "duration": "4-9 months"},
+    {"name": "Audit of an existing structure (second opinion)", "price_eur": 18000, "duration": "3-4 weeks"},
+    {"name": "Concierge and lifestyle management", "price_eur": "6000 per month", "duration": "ongoing"},
+    {"name": "Art advisory and collection custody", "price_eur": "from 9000 per month", "duration": "ongoing"},
+    {"name": "Family cybersecurity and digital hygiene", "price_eur": 22000, "duration": "one-off plus support"}
   ],
   "discounts": [
-    "Оплата retainer за 12 месяцев вперёд — скидка 8%",
-    "Переход с Essential Wealth на Private Office в течение первого года — setup fee зачитывается полностью",
-    "Второе домохозяйство семьи (ветвь) — 25% на retainer"
+    "Pay the retainer 12 months upfront and get an 8% discount",
+    "Upgrade from Essential Wealth to Private Office within the first year and the setup fee is credited in full",
+    "A second household in the family (a branch) gets 25% off the retainer"
   ]
 }

@@ -17,14 +17,22 @@ logger = logging.getLogger(__name__)
 
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]{2,}")
 PHONE_RE = re.compile(r"(?:\+|00)?[\d][\d\s\-().]{7,17}\d")
-MONEY_RE = re.compile(r"\d[\d\s.,]*\s*(?:млн|млрд|mln|m\b|kk|миллион|million)", re.IGNORECASE)
+MONEY_RE = re.compile(
+    r"\d[\d\s.,]*\s*(?:m\b|bn\b|k\b|mln|million|billion|thousand)", re.IGNORECASE
+)
 
 PRICING_WORDS = (
-    "цена", "цены", "стоимость", "стоит", "сколько", "тариф", "прайс", "скидк", "дорого",
-    "бюджет", "оплат", "fee", "price", "cost",
+    "price", "pricing", "cost", "how much", "fee", "retainer", "tier", "discount",
+    "expensive", "budget", "quote", "charge", "rate",
 )
-START_WORDS = ("как начать", "как стартовать", "с чего начать", "заявк", "договор", "созвон", "звонок")
-REFUSAL_WORDS = ("не хочу", "не буду", "не готов", "позже", "не дам", "без контакт", "не оставлю")
+START_WORDS = (
+    "get started", "getting started", "how do we start", "how to start", "next step",
+    "sign up", "engagement", "onboard", "book a call", "speak to", "schedule",
+)
+REFUSAL_WORDS = (
+    "don't want", "do not want", "not comfortable", "rather not", "no thanks", "not yet",
+    "maybe later", "prefer not", "won't share", "not sharing",
+)
 
 # Fed into the English LEAD_ASK prompt, hence English labels.
 SLOT_LABELS = {
@@ -33,10 +41,9 @@ SLOT_LABELS = {
     "phone": "the client's phone number",
     "preferred_time": "a convenient time for a call",
 }
-# Client-facing copy stays in Russian, like the rest of the knowledge base.
 FALLBACK_ANSWER = (
-    "Извините, сейчас не могу обратиться к базе знаний. "
-    "Могу передать вопрос партнёру — он ответит лично."
+    "Sorry, I cannot reach the knowledge base right now. "
+    "I can pass your question to a partner so they answer you directly."
 )
 
 
@@ -228,7 +235,7 @@ class Nodes:
         except LLMError:
             channel = lead.email or lead.phone
             note = self.playbook["handoff_message"].format(
-                name=lead.name or "", channel=channel or "указанному контакту"
+                name=lead.name or "there", channel=channel or "the contact you gave"
             )
         return {
             "crm_status": "submitted",
@@ -279,14 +286,14 @@ def _valid_email(value: object) -> bool:
 
 
 def _clean_phone(text: str) -> str | None:
-    """Rejects look-alike numbers: years, amounts, "5 млн"."""
+    """Rejects look-alike numbers: years and money amounts such as "25 million"."""
     for match in PHONE_RE.finditer(text):
         raw = match.group()
         digits = re.sub(r"\D", "", raw)
         if not 9 <= len(digits) <= 15:
             continue
         tail = text[match.end() : match.end() + 12].lower()
-        if any(word in tail for word in ("млн", "млрд", "€", "eur", "%")):
+        if any(word in tail for word in ("m ", "million", "bn", "billion", "eur", "€", "%")):
             continue
         return ("+" if raw.strip().startswith("+") else "") + digits
     return None

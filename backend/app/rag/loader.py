@@ -28,7 +28,7 @@ def _read(path: Path) -> dict[str, Any]:
 
 
 def _fmt_price(value: Any) -> str:
-    return f"{value:,} €".replace(",", " ") if isinstance(value, int | float) else str(value)
+    return f"{value:,} EUR".replace(",", " ") if isinstance(value, int | float) else str(value)
 
 
 def _bullets(items: list[str]) -> str:
@@ -44,37 +44,37 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
     chunks.append(
         Chunk(
             id="company",
-            title=f"О компании {company['name']}",
+            title=f"About {company['name']}",
             source="services.json",
             metadata={"category": "company"},
             text=(
-                f"{company['name']} — независимый family office, основан в {company['founded']} году.\n"
-                f"Активы под управлением: {company['aum_eur']} €. Клиентов: {company['clients']} семей.\n"
-                f"Юрисдикции: {', '.join(company['jurisdictions'])}.\n"
-                f"Модель оплаты: {company['billing']}"
+                f"{company['name']} is an independent family office founded in {company['founded']}.\n"
+                f"Assets under advisory: {company['aum_eur']} EUR. Clients: {company['clients']} families.\n"
+                f"Jurisdictions: {', '.join(company['jurisdictions'])}.\n"
+                f"Fee model: {company['billing']}"
             ),
         )
     )
 
     for tier in services["tiers"]:
         excludes = (
-            f"\nНе входит:\n{_bullets(tier['excludes'])}" if tier.get("excludes") else ""
+            f"\nNot included:\n{_bullets(tier['excludes'])}" if tier.get("excludes") else ""
         )
         chunks.append(
             Chunk(
                 id=f"tier-{tier['id']}",
-                title=f"Тариф {tier['name']}",
+                title=f"{tier['name']} tier pricing",
                 source="services.json",
                 metadata={"category": "pricing", "tier": tier["id"], "tier_name": tier["name"]},
                 text=(
-                    f"Тариф «{tier['name']}» — {tier['tagline']}.\n"
-                    f"Для кого: {tier['target_client']}.\n"
-                    f"Стоимость: {_fmt_price(tier['price_monthly_eur'])} в месяц. "
+                    f"The {tier['name']} tier: {tier['tagline']}.\n"
+                    f"Who it is for: {tier['target_client']}.\n"
+                    f"Price: {_fmt_price(tier['price_monthly_eur'])} per month. "
                     f"Setup fee: {_fmt_price(tier['setup_fee_eur'])}. "
-                    f"Минимальный срок договора: {tier['min_contract_months']} месяцев. "
+                    f"Minimum contract term: {tier['min_contract_months']} months. "
                     f"{tier['price_note']}.\n"
-                    f"Онбординг: {tier['onboarding_weeks']} недель. Команда: {tier['team']}.\n"
-                    f"Входит в тариф:\n{_bullets(tier['includes'])}{excludes}"
+                    f"Onboarding: {tier['onboarding_weeks']} weeks. Team: {tier['team']}.\n"
+                    f"Included in the tier:\n{_bullets(tier['includes'])}{excludes}"
                 ),
             )
         )
@@ -84,12 +84,12 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
         chunks.append(
             Chunk(
                 id="addons",
-                title="Дополнительные услуги (add-ons)",
+                title="Additional services (add-ons)",
                 source="services.json",
                 metadata={"category": "pricing"},
-                text="Дополнительные услуги сверх тарифа:\n"
+                text="Additional services on top of the tier:\n"
                 + "\n".join(
-                    f"- {a['name']}: {_fmt_price(a['price_eur'])}, срок: {a['duration']}"
+                    f"- {a['name']}: {_fmt_price(a['price_eur'])}, duration: {a['duration']}"
                     for a in addons
                 ),
             )
@@ -100,10 +100,10 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
         chunks.append(
             Chunk(
                 id="discounts",
-                title="Скидки и условия оплаты",
+                title="Discounts and payment terms",
                 source="services.json",
                 metadata={"category": "pricing"},
-                text="Действующие скидки и специальные условия:\n" + _bullets(discounts),
+                text="Current discounts and special terms:\n" + _bullets(discounts),
             )
         )
 
@@ -114,7 +114,7 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
                 title=item["question"],
                 source="faq.json",
                 metadata={"category": item["category"]},
-                text=f"Вопрос: {item['question']}\nОтвет: {item['answer']}",
+                text=f"Question: {item['question']}\nAnswer: {item['answer']}",
             )
         )
 
@@ -123,7 +123,7 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
         chunks.append(
             Chunk(
                 id=f"playbook-{principle['id']}",
-                title=f"Принцип работы с клиентом: {principle['title']}",
+                title=f"Client-handling principle: {principle['title']}",
                 source="playbook.json",
                 metadata={"category": "playbook", "internal": True},
                 text=f"{principle['title']}. {principle['detail']}",
@@ -133,11 +133,11 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
         chunks.append(
             Chunk(
                 id=f"objection-{i}",
-                title=f"Возражение: {objection['objection']}",
+                title=f"Objection: {objection['objection']}",
                 source="playbook.json",
                 metadata={"category": "playbook", "internal": True},
-                text=f"Возражение клиента: «{objection['objection']}».\n"
-                f"Как отвечать: {objection['response']}",
+                text=f"Client objection: \"{objection['objection']}\".\n"
+                f"How to respond: {objection['response']}",
             )
         )
 

@@ -21,3 +21,4 @@ dist/
 .vscode/
 
 backlog.md
+deploy_ignore.md
