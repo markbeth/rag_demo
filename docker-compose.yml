@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./src
+    image: familyoffice-rag-backend:local
+    ports:
+      # Override with BACKEND_PORT when 8000 is already taken on the host.
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file:
+      # cp src/.env.example src/.env and put your provider key there
+      - path: ./src/.env
+        required: false
+    environment:
+      # Compose values win over .env, so the container can be steered from here.
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+    volumes:
+      # Leads and the embeddings cache survive a rebuild.
+      - backend-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  backend-data:
