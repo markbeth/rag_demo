@@ -64,6 +64,3 @@ app/
   api/               routes_chat, routes_meta
   data/              mock data: services, faq, playbook
 ```
-
-Packages use implicit namespace packages (PEP 420), so there are no `__init__.py` files;
-`pythonpath = ["."]` in `pyproject.toml` keeps pytest imports working.
