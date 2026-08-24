@@ -16,7 +16,11 @@ def test_chunks_loaded(store: HybridStore):
 
 
 def test_tokenize_drops_stopwords():
-    assert tokenize("How much does the Private Office cost") == ["privat", "offic", "cost"]
+    assert tokenize("How much does the Private Office cost") == [
+        "privat",
+        "offic",
+        "cost",
+    ]
 
 
 @pytest.mark.parametrize(

@@ -10,12 +10,16 @@ LEAD_ASK_REPLY = "Leave an email and I will send the tier comparison."
 class FakeLLM:
     """Stands in for the provider: canned replies keyed by the kind of prompt."""
 
-    def __init__(self, extract: dict | None = None, answer: str = "Answer from the KB.") -> None:
+    def __init__(
+        self, extract: dict | None = None, answer: str = "Answer from the KB."
+    ) -> None:
         self.extract_result = extract or {}
         self.answer = answer
         self.calls: list[list[dict]] = []
 
-    async def chat(self, messages, *, temperature=None, max_tokens=None, json_mode=False):
+    async def chat(
+        self, messages, *, temperature=None, max_tokens=None, json_mode=False
+    ):
         self.calls.append(list(messages))
         content = messages[-1]["content"]
         if LEAD_ASK_MARKER in content:

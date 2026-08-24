@@ -5,7 +5,9 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Role = Literal["user", "assistant", "system"]
-Stage = Literal["greeting", "discovery", "qualifying", "collecting", "submitted", "declined"]
+Stage = Literal[
+    "greeting", "discovery", "qualifying", "collecting", "submitted", "declined"
+]
 
 
 class Message(BaseModel):

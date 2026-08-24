@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from typing import Annotated
 
-from fastapi import Request
+from fastapi import Depends, Request
 
 from app.config import Settings, get_settings
 from app.graph.graph import build_graph
@@ -46,7 +47,9 @@ async def build_container(settings: Settings | None = None) -> Container:
         logger.info("Embeddings disabled or no API key: falling back to lexical search")
 
     crm = JsonlCrm()
-    sessions = SessionStore(ttl_s=settings.session_ttl_s, history_max=settings.history_max_messages)
+    sessions = SessionStore(
+        ttl_s=settings.session_ttl_s, history_max=settings.history_max_messages
+    )
     nodes = Nodes(llm, store, playbook, crm, top_k=settings.retriever_top_k)
     chat = ChatService(build_graph(nodes), nodes, sessions)
     logger.info("Knowledge base loaded: %s chunks", store.size)
@@ -55,3 +58,6 @@ async def build_container(settings: Settings | None = None) -> Container:
 
 def container(request: Request) -> Container:
     return request.app.state.container
+
+
+Deps = Annotated[Container, Depends(container)]

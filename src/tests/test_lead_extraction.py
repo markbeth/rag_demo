@@ -1,6 +1,6 @@
 import pytest
 
-from app.graph.nodes import _clean_phone
+from app.graph.nodes import clean_phone
 from app.schemas import Lead
 from tests.fakes import FakeLLM
 
@@ -15,7 +15,7 @@ from tests.fakes import FakeLLM
     ],
 )
 def test_phone_cleanup(text, expected):
-    assert _clean_phone(text) == expected
+    assert clean_phone(text) == expected
 
 
 def test_lead_slots():

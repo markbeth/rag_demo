@@ -51,11 +51,16 @@ class LLMClient:
         max_tokens: int | None = None,
         json_mode: bool = False,
     ) -> str:
-        payload = self._chat_payload(messages, temperature, max_tokens, json_mode, stream=False)
+        payload = self._chat_payload(
+            messages, temperature, max_tokens, json_mode, stream=False
+        )
         data = await self._post_json("/chat/completions", payload)
         try:
             return data["choices"][0]["message"]["content"] or ""
-        except (KeyError, IndexError) as exc:  # pragma: no cover - guards malformed responses
+        except (
+            KeyError,
+            IndexError,
+        ) as exc:  # pragma: no cover - guards malformed responses
             raise LLMError(f"Unexpected provider response: {data}") from exc
 
     async def chat_json(
@@ -76,11 +81,17 @@ class LLMClient:
         max_tokens: int | None = None,
     ) -> AsyncIterator[str]:
         """Yields tokens as they arrive (the provider's SSE stream)."""
-        payload = self._chat_payload(messages, temperature, max_tokens, False, stream=True)
-        async with self._client.stream("POST", "/chat/completions", json=payload) as response:
+        payload = self._chat_payload(
+            messages, temperature, max_tokens, False, stream=True
+        )
+        async with self._client.stream(
+            "POST", "/chat/completions", json=payload
+        ) as response:
             if response.status_code >= 400:
                 body = (await response.aread()).decode(errors="replace")
-                raise LLMError(f"provider returned {response.status_code}: {body[:500]}")
+                raise LLMError(
+                    f"provider returned {response.status_code}: {body[:500]}"
+                )
             async for line in response.aiter_lines():
                 if not line or not line.startswith("data:"):
                     continue
@@ -115,7 +126,9 @@ class LLMClient:
         payload: dict[str, Any] = {
             "model": self._settings.llm_model,
             "messages": list(messages),
-            "temperature": self._settings.llm_temperature if temperature is None else temperature,
+            "temperature": (
+                self._settings.llm_temperature if temperature is None else temperature
+            ),
             "stream": stream,
         }
         if max_tokens is not None:

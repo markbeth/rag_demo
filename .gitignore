@@ -7,8 +7,8 @@ __pycache__/
 *.egg-info/
 
 .env
-backend/.env
-backend/data/
+src/.env
+src/data/
 
 # node
 node_modules/

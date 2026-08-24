@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
+from collections import deque
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
@@ -42,18 +43,24 @@ class JsonlCrm:
         return lead_id
 
     async def list_leads(self, limit: int = 50) -> list[dict]:
+        """Newest first. The file is streamed and only `limit` records are held."""
         if not self.path.exists():
             return []
-        raw = await asyncio.to_thread(self.path.read_text, "utf-8")
-        records = []
-        for line in raw.splitlines():
+        records = await asyncio.to_thread(_read_tail, self.path, limit)
+        return records[::-1]
+
+
+def _read_tail(path: Path, limit: int) -> list[dict]:
+    tail: deque[dict] = deque(maxlen=limit)
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
             if not line.strip():
                 continue
             try:
-                records.append(json.loads(line))
+                tail.append(json.loads(line))
             except json.JSONDecodeError:
                 continue
-        return records[-limit:][::-1]
+    return list(tail)
 
 
 def _append_line(path: Path, line: str) -> None:

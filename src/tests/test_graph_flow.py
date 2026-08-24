@@ -1,3 +1,5 @@
+import asyncio
+
 from tests.fakes import LEAD_ASK_REPLY, FakeCrm, FakeLLM
 
 
@@ -62,8 +64,28 @@ async def test_stream_emits_sse_events(make_chat):
     llm = FakeLLM(answer="It costs 12 000 EUR.")
     service, _ = make_chat(llm)
 
-    joined = "".join([chunk async for chunk in service.stream("Price of Essential?", None)])
+    joined = "".join(
+        [chunk async for chunk in service.stream("Price of Essential?", None)]
+    )
     assert "event: meta" in joined
     assert "event: sources" in joined
     assert "event: token" in joined
     assert "event: done" in joined
+
+
+async def test_concurrent_turns_submit_the_lead_once(make_chat):
+    """Two messages racing in one session must not create two CRM leads."""
+    llm = FakeLLM(
+        extract={"name": "Maria", "email": "maria@example.com"}, answer="Sure."
+    )
+    service, crm = make_chat(llm, FakeCrm())
+
+    await asyncio.gather(
+        service.respond("How much does Private Office cost?", "s_race"),
+        service.respond("And Essential Wealth?", "s_race"),
+    )
+
+    assert len(crm.submitted) == 1, "the lead was submitted more than once"
+    session = service._sessions.get("s_race")
+    assert session is not None
+    assert session.user_turns() == 2, "both turns must be recorded in the history"

@@ -4,10 +4,10 @@ A demo of a RAG chatbot: it advises prospects on family office services and pric
 
 ```
 list
-backend/      FastAPI + LangGraph + httpx (done)
+src/      FastAPI + LangGraph + httpx (done)
 ```
 
 Stack: Python 3.12, FastAPI, LangGraph, any OpenAI-compatible provider.
 
-Backend quickstart: [backend/README.md](backend/README.md).
+Backend quickstart: [src/README.md](src/README.md).
 

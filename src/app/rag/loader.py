@@ -28,7 +28,11 @@ def _read(path: Path) -> dict[str, Any]:
 
 
 def _fmt_price(value: Any) -> str:
-    return f"{value:,} EUR".replace(",", " ") if isinstance(value, int | float) else str(value)
+    return (
+        f"{value:,} EUR".replace(",", " ")
+        if isinstance(value, int | float)
+        else str(value)
+    )
 
 
 def _bullets(items: list[str]) -> str:
@@ -58,14 +62,20 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
 
     for tier in services["tiers"]:
         excludes = (
-            f"\nNot included:\n{_bullets(tier['excludes'])}" if tier.get("excludes") else ""
+            f"\nNot included:\n{_bullets(tier['excludes'])}"
+            if tier.get("excludes")
+            else ""
         )
         chunks.append(
             Chunk(
                 id=f"tier-{tier['id']}",
                 title=f"{tier['name']} tier pricing",
                 source="services.json",
-                metadata={"category": "pricing", "tier": tier["id"], "tier_name": tier["name"]},
+                metadata={
+                    "category": "pricing",
+                    "tier": tier["id"],
+                    "tier_name": tier["name"],
+                },
                 text=(
                     f"The {tier['name']} tier: {tier['tagline']}.\n"
                     f"Who it is for: {tier['target_client']}.\n"
@@ -136,7 +146,7 @@ def load_chunks(data_dir: Path | None = None) -> list[Chunk]:
                 title=f"Objection: {objection['objection']}",
                 source="playbook.json",
                 metadata={"category": "playbook", "internal": True},
-                text=f"Client objection: \"{objection['objection']}\".\n"
+                text=f'Client objection: "{objection["objection"]}".\n'
                 f"How to respond: {objection['response']}",
             )
         )

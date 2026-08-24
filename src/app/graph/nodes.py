@@ -21,6 +21,7 @@ MONEY_RE = re.compile(
     r"\d[\d\s.,]*\s*(?:m\b|bn\b|k\b|mln|million|billion|thousand)", re.IGNORECASE
 )
 
+# fmt: off
 PRICING_WORDS = (
     "price", "pricing", "cost", "how much", "fee", "retainer", "tier", "discount",
     "expensive", "budget", "quote", "charge", "rate",
@@ -33,6 +34,7 @@ REFUSAL_WORDS = (
     "don't want", "do not want", "not comfortable", "rather not", "no thanks", "not yet",
     "maybe later", "prefer not", "won't share", "not sharing",
 )
+# fmt: on
 
 # Fed into the English LEAD_ASK prompt, hence English labels.
 SLOT_LABELS = {
@@ -41,6 +43,7 @@ SLOT_LABELS = {
     "phone": "the client's phone number",
     "preferred_time": "a convenient time for a call",
 }
+ANSWER_MAX_TOKENS = 600
 FALLBACK_ANSWER = (
     "Sorry, I cannot reach the knowledge base right now. "
     "I can pass your question to a partner so they answer you directly."
@@ -105,19 +108,25 @@ class Nodes:
         # Regexes are the reliable layer: their result outranks the LLM's.
         if email := EMAIL_RE.search(message):
             lead.email = email.group()
-        if phone := _clean_phone(message):
+        if phone := clean_phone(message):
             lead.phone = phone
         if money := MONEY_RE.search(message):
             lead.capital_range = lead.capital_range or money.group().strip()
 
         extracted = await self._llm_extract(message, lead)
-        for field in ("name", "preferred_time", "capital_range", "interest", "tier_interest"):
+        for field in (
+            "name",
+            "preferred_time",
+            "capital_range",
+            "interest",
+            "tier_interest",
+        ):
             value = extracted.get(field)
             if isinstance(value, str) and value.strip() and not getattr(lead, field):
                 setattr(lead, field, value.strip()[:200])
         if not lead.email and _valid_email(extracted.get("email")):
             lead.email = extracted["email"].strip()
-        if not lead.phone and (phone := _clean_phone(str(extracted.get("phone") or ""))):
+        if not lead.phone and (phone := clean_phone(str(extracted.get("phone") or ""))):
             lead.phone = phone
 
         refused = bool(extracted.get("refused_contact")) or any(
@@ -145,7 +154,9 @@ class Nodes:
         # Short follow-ups ("and the second one?") retrieve nothing on their own,
         # so the client's previous question is prepended.
         if len(query.split()) <= 4:
-            previous = next((m.content for m in reversed(history) if m.role == "user"), "")
+            previous = next(
+                (m.content for m in reversed(history) if m.role == "user"), ""
+            )
             query = f"{previous} {query}".strip()
         hits = await self.store.search(query, llm=self.llm, k=self.top_k)
         return {"hits": hits}
@@ -155,7 +166,7 @@ class Nodes:
     async def generate(self, state: GraphState) -> GraphState:
         messages = self.answer_messages(state)
         try:
-            answer = await self.llm.chat(messages, max_tokens=600)
+            answer = await self.llm.chat(messages, max_tokens=ANSWER_MAX_TOKENS)
         except LLMError as exc:
             logger.error("Answer generation failed: %s", exc)
             return {"answer": FALLBACK_ANSWER}
@@ -180,7 +191,9 @@ class Nodes:
         if slot is None:
             return {"lead_ask": ""}
         hints = self.playbook.get("slot_questions", {}).get(slot, [])
-        hint = hints[min(state.get("user_turns", 1) - 1, len(hints) - 1)] if hints else ""
+        hint = (
+            hints[min(state.get("user_turns", 1) - 1, len(hints) - 1)] if hints else ""
+        )
         prompt = prompts.LEAD_ASK.format(
             slot_label=SLOT_LABELS.get(slot, slot),
             hint=hint,
@@ -190,10 +203,17 @@ class Nodes:
             answer=state.get("answer", ""),
         )
         try:
-            ask = (await self.llm.chat([{"role": "user", "content": prompt}], temperature=0.5,
-                                       max_tokens=140)).strip()
+            ask = (
+                await self.llm.chat(
+                    [{"role": "user", "content": prompt}],
+                    temperature=0.5,
+                    max_tokens=140,
+                )
+            ).strip()
         except LLMError as exc:
-            logger.warning("Slot request generation failed, using the template: %s", exc)
+            logger.warning(
+                "Slot request generation failed, using the template: %s", exc
+            )
             ask = hint
         asked = [*state.get("asked_slots", []), slot]
         return {"lead_ask": ask, "asked_slots": asked}
@@ -206,7 +226,9 @@ class Nodes:
         triggered = state.get("intent") in {"pricing", "onboarding", "contact"} or bool(
             lead.capital_range
         )
-        if turns < 2 and not triggered:  # value first: ask for nothing in the first answer
+        if (
+            turns < 2 and not triggered
+        ):  # value first: ask for nothing in the first answer
             return None
         asked = state.get("asked_slots", [])
         for slot in lead.missing_slots():
@@ -228,7 +250,12 @@ class Nodes:
         contacts = ", ".join(filter(None, [lead.name, lead.email, lead.phone]))
         try:
             note = await self.llm.chat(
-                [{"role": "user", "content": prompts.CONFIRM_HANDOFF.format(contacts=contacts)}],
+                [
+                    {
+                        "role": "user",
+                        "content": prompts.CONFIRM_HANDOFF.format(contacts=contacts),
+                    }
+                ],
                 temperature=0.4,
                 max_tokens=120,
             )
@@ -285,7 +312,7 @@ def _valid_email(value: object) -> bool:
     return isinstance(value, str) and bool(EMAIL_RE.fullmatch(value.strip()))
 
 
-def _clean_phone(text: str) -> str | None:
+def clean_phone(text: str) -> str | None:
     """Rejects look-alike numbers: years and money amounts such as "25 million"."""
     for match in PHONE_RE.finditer(text):
         raw = match.group()
@@ -293,7 +320,9 @@ def _clean_phone(text: str) -> str | None:
         if not 9 <= len(digits) <= 15:
             continue
         tail = text[match.end() : match.end() + 12].lower()
-        if any(word in tail for word in ("m ", "million", "bn", "billion", "eur", "€", "%")):
+        if any(
+            word in tail for word in ("m ", "million", "bn", "billion", "eur", "€", "%")
+        ):
             continue
         return ("+" if raw.strip().startswith("+") else "") + digits
     return None
