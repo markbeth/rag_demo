@@ -1,4 +1,4 @@
-"""Узлы графа: маршрутизация, извлечение лида, поиск, генерация, стратегия сбора, CRM."""
+"""Graph nodes: routing, lead extraction, retrieval, generation, ask strategy, CRM."""
 
 from __future__ import annotations
 
@@ -26,12 +26,14 @@ PRICING_WORDS = (
 START_WORDS = ("как начать", "как стартовать", "с чего начать", "заявк", "договор", "созвон", "звонок")
 REFUSAL_WORDS = ("не хочу", "не буду", "не готов", "позже", "не дам", "без контакт", "не оставлю")
 
+# Fed into the English LEAD_ASK prompt, hence English labels.
 SLOT_LABELS = {
-    "name": "имя клиента",
-    "email": "email клиента",
-    "phone": "телефон клиента",
-    "preferred_time": "удобное время звонка",
+    "name": "the client's name",
+    "email": "the client's email",
+    "phone": "the client's phone number",
+    "preferred_time": "a convenient time for a call",
 }
+# Client-facing copy stays in Russian, like the rest of the knowledge base.
 FALLBACK_ANSWER = (
     "Извините, сейчас не могу обратиться к базе знаний. "
     "Могу передать вопрос партнёру — он ответит лично."
@@ -39,7 +41,7 @@ FALLBACK_ANSWER = (
 
 
 class Nodes:
-    """Держит зависимости, чтобы узлы оставались чистыми функциями состояния."""
+    """Holds the dependencies so each node stays a plain function of the state."""
 
     def __init__(
         self,
@@ -58,7 +60,7 @@ class Nodes:
         self.top_k = top_k
         self.company = company
 
-    # --- 1. маршрутизация ------------------------------------------------
+    # --- 1. routing ------------------------------------------------------
 
     async def route(self, state: GraphState) -> GraphState:
         text = state["message"].lower()
@@ -87,13 +89,13 @@ class Nodes:
             stage = "discovery"
         return {"intent": intent, "stage": stage}
 
-    # --- 2. извлечение данных клиента ------------------------------------
+    # --- 2. client data extraction ---------------------------------------
 
     async def extract_lead(self, state: GraphState) -> GraphState:
         message = state["message"]
         lead = state["lead"].model_copy()
 
-        # Регексы — надёжный слой: их результат приоритетнее LLM.
+        # Regexes are the reliable layer: their result outranks the LLM's.
         if email := EMAIL_RE.search(message):
             lead.email = email.group()
         if phone := _clean_phone(message):
@@ -125,30 +127,30 @@ class Nodes:
         try:
             return await self.llm.chat_json([{"role": "user", "content": prompt}])
         except LLMError as exc:
-            logger.warning("Извлечение лида не удалось: %s", exc)
+            logger.warning("Lead extraction failed: %s", exc)
             return {}
 
-    # --- 3. поиск --------------------------------------------------------
+    # --- 3. retrieval ----------------------------------------------------
 
     async def retrieve(self, state: GraphState) -> GraphState:
         query = state["message"]
         history: list[Message] = state.get("history", [])
-        # Короткие реплики («а второй?») без контекста не находят ничего —
-        # дописываем предыдущий вопрос клиента.
+        # Short follow-ups ("and the second one?") retrieve nothing on their own,
+        # so the client's previous question is prepended.
         if len(query.split()) <= 4:
             previous = next((m.content for m in reversed(history) if m.role == "user"), "")
             query = f"{previous} {query}".strip()
         hits = await self.store.search(query, llm=self.llm, k=self.top_k)
         return {"hits": hits}
 
-    # --- 4. генерация ответа ---------------------------------------------
+    # --- 4. answer generation --------------------------------------------
 
     async def generate(self, state: GraphState) -> GraphState:
         messages = self.answer_messages(state)
         try:
             answer = await self.llm.chat(messages, max_tokens=600)
         except LLMError as exc:
-            logger.error("Генерация ответа не удалась: %s", exc)
+            logger.error("Answer generation failed: %s", exc)
             return {"answer": FALLBACK_ANSWER}
         return {"answer": answer.strip()}
 
@@ -163,7 +165,7 @@ class Nodes:
         messages.append({"role": "user", "content": state["message"]})
         return messages
 
-    # --- 5. стратегия сбора контактов ------------------------------------
+    # --- 5. contact collection strategy ----------------------------------
 
     async def lead_strategy(self, state: GraphState) -> GraphState:
         lead: Lead = state["lead"]
@@ -184,28 +186,28 @@ class Nodes:
             ask = (await self.llm.chat([{"role": "user", "content": prompt}], temperature=0.5,
                                        max_tokens=140)).strip()
         except LLMError as exc:
-            logger.warning("Не удалось сгенерировать запрос слота, беру шаблон: %s", exc)
+            logger.warning("Slot request generation failed, using the template: %s", exc)
             ask = hint
         asked = [*state.get("asked_slots", []), slot]
         return {"lead_ask": ask, "asked_slots": asked}
 
     def _next_slot(self, state: GraphState, lead: Lead) -> str | None:
-        """Один слот за раз, только когда это уместно (см. playbook)."""
+        """One slot at a time, and only when it is appropriate (see the playbook)."""
         if lead.refusals >= 2 or state.get("stage") == "submitted":
             return None
         turns = state.get("user_turns", 1)
         triggered = state.get("intent") in {"pricing", "onboarding", "contact"} or bool(
             lead.capital_range
         )
-        if turns < 2 and not triggered:  # value-first: в первом ответе не просим ничего
+        if turns < 2 and not triggered:  # value first: ask for nothing in the first answer
             return None
         asked = state.get("asked_slots", [])
         for slot in lead.missing_slots():
-            if asked.count(slot) < 2:  # один слот просим максимум дважды
+            if asked.count(slot) < 2:  # each slot is asked for at most twice
                 return slot
         return None
 
-    # --- 6. заявка в CRM --------------------------------------------------
+    # --- 6. CRM handoff ---------------------------------------------------
 
     async def crm_submit(self, state: GraphState) -> GraphState:
         lead: Lead = state["lead"]
@@ -213,7 +215,7 @@ class Nodes:
         try:
             lead_id = await self.crm.submit(state["session_id"], lead, transcript)
         except OSError as exc:
-            logger.error("Не удалось записать лид в CRM: %s", exc)
+            logger.error("Writing the lead to the CRM failed: %s", exc)
             return {"crm_status": "failed"}
 
         contacts = ", ".join(filter(None, [lead.name, lead.email, lead.phone]))
@@ -236,7 +238,7 @@ class Nodes:
         }
 
 
-# --- вспомогательное -----------------------------------------------------
+# --- helpers -------------------------------------------------------------
 
 
 def should_submit(state: GraphState) -> str:
@@ -256,9 +258,9 @@ def compose_answer(answer: str, lead_ask: str) -> str:
 
 def _format_context(hits: list) -> str:
     if not hits:
-        return "(-- в базе знаний нет релевантных данных --)"
+        return "(-- no relevant data in the knowledge base --)"
     return "\n\n".join(
-        f"[{i + 1}] {hit.chunk.title} (источник: {hit.chunk.source})\n{hit.chunk.text}"
+        f"[{i + 1}] {hit.chunk.title} (source: {hit.chunk.source})\n{hit.chunk.text}"
         for i, hit in enumerate(hits)
     )
 
@@ -269,7 +271,7 @@ def _known(lead: Lead) -> str:
         for key, value in lead.model_dump(exclude={"refusals", "notes"}).items()
         if value
     }
-    return str(known) if known else "ничего не известно"
+    return str(known) if known else "nothing known yet"
 
 
 def _valid_email(value: object) -> bool:
@@ -277,7 +279,7 @@ def _valid_email(value: object) -> bool:
 
 
 def _clean_phone(text: str) -> str | None:
-    """Отсекает номера-обманки: годы, суммы, «5 млн»."""
+    """Rejects look-alike numbers: years, amounts, "5 млн"."""
     for match in PHONE_RE.finditer(text):
         raw = match.group()
         digits = re.sub(r"\D", "", raw)

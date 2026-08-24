@@ -5,7 +5,7 @@ from app.rag.store import HybridStore, tokenize
 
 async def top_id(store: HybridStore, query: str) -> str:
     hits = await store.search(query, llm=None, k=3)
-    assert hits, f"ничего не найдено по запросу: {query}"
+    assert hits, f"nothing retrieved for query: {query}"
     return hits[0].chunk.id
 
 
@@ -33,9 +33,9 @@ async def test_lexical_retrieval_finds_right_chunk(store, query, expected):
 
 
 async def test_internal_playbook_hidden_by_default(store):
-    hits = await store.search("как просить контакты у клиента", llm=None, k=6)
+    query = "как просить контакты у клиента"
+    hits = await store.search(query, llm=None, k=6)
     assert all(not hit.chunk.metadata.get("internal") for hit in hits)
-    internal = await store.search(
-        "как просить контакты у клиента", llm=None, k=6, include_internal=True
-    )
+
+    internal = await store.search(query, llm=None, k=6, include_internal=True)
     assert any(hit.chunk.metadata.get("internal") for hit in internal)

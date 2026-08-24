@@ -1,4 +1,4 @@
-"""Прикладной слой: связывает сессии, граф и стриминг для API."""
+"""Application layer: ties sessions, the graph and streaming together for the API."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ class ChatService:
         self._nodes = nodes
         self._sessions = sessions
 
-    # --- обычный ответ ---------------------------------------------------
+    # --- buffered response -----------------------------------------------
 
     async def respond(self, message: str, session_id: str | None) -> ChatResponse:
         session = self._sessions.get_or_create(session_id)
@@ -42,13 +42,13 @@ class ChatService:
             lead_id=session.lead_id,
         )
 
-    # --- стриминг --------------------------------------------------------
+    # --- streaming -------------------------------------------------------
 
     async def stream(self, message: str, session_id: str | None) -> AsyncIterator[str]:
-        """SSE-события: meta → sources → token* → lead → done.
+        """SSE events: meta -> sources -> token* -> done.
 
-        Граф здесь разложен вручную: LangGraph отдаёт узел целиком, а нам нужны
-        токены генерации по мере поступления.
+        The graph is unrolled by hand here: LangGraph emits a node at a time, while
+        the client needs generation tokens as they arrive.
         """
         session = self._sessions.get_or_create(session_id)
         state = self._initial_state(session, message)
@@ -78,8 +78,8 @@ class ChatService:
             if ask := state.get("lead_ask"):
                 yield _sse("token", {"text": f"\n\n{ask}"})
         except LLMError as exc:
-            logger.error("Стриминг прерван: %s", exc)
-            yield _sse("error", {"message": "Провайдер LLM недоступен, попробуйте ещё раз."})
+            logger.error("Streaming aborted: %s", exc)
+            yield _sse("error", {"message": "LLM provider is unavailable, please try again."})
             return
 
         answer = compose_answer(state.get("answer", ""), state.get("lead_ask", ""))
@@ -96,7 +96,7 @@ class ChatService:
             },
         )
 
-    # --- общее -----------------------------------------------------------
+    # --- shared ----------------------------------------------------------
 
     def _initial_state(self, session: Session, message: str) -> GraphState:
         return {

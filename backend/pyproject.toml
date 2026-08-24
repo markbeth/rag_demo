@@ -20,6 +20,8 @@ dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "anyio>=4.6"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+# Namespace packages (no __init__.py), so the roots are declared explicitly.
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
