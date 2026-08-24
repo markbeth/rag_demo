@@ -1,14 +1,18 @@
 # Family Office RAG Chat
 
-Монорепа с демо RAG-чатбота: консультирует по услугам и тарифам family office и
-по ходу диалога собирает контакты клиента в CRM.
+A monorepo demo of a RAG chatbot: it advises prospects on family office services and
+pricing, and collects their contact details into a CRM along the way.
 
 ```
-backlog.md    ТЗ и задачи по бэку и фронту
-backend/      FastAPI + LangGraph + httpx (готово)
-frontend/     React + Vite (следующий шаг)
+backlog.md    requirements and the backend/frontend task list
+backend/      FastAPI + LangGraph + httpx (done)
+frontend/     React + Vite (next up)
 ```
 
-Стек: Python 3.12, FastAPI, LangGraph, любой OpenAI-совместимый провайдер, React + Vite.
+Stack: Python 3.12, FastAPI, LangGraph, any OpenAI-compatible provider, React + Vite.
 
-Быстрый старт бэкенда — [backend/README.md](backend/README.md).
+Backend quickstart: [backend/README.md](backend/README.md).
+
+> Note on languages: code, comments and docs are English. The mock knowledge base and
+> the bot's client-facing copy are Russian, because the demo plays a Russian-speaking
+> family office. The prompts instruct the model to reply in the client's language.
